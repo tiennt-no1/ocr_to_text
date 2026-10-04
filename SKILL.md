@@ -65,6 +65,11 @@ Examples:
 Options: `--language` (default `vi`), `--author`, `--split-chapters`.
 Produces a valid EPUB 3 with an EPUB 2 NCX fallback.
 
+Paragraph handling: OCR output is one wrapped line per source line with no
+blank lines, so `txt_to_epub.py` merges wrapped lines into logical
+paragraphs (new paragraph when the previous line ended a sentence early on
+the page). Mid-paragraph page breaks are re-joined automatically.
+
 ## Important caveat
 
 VietOCR is a **line-level** recognizer: `predict()` works best on cropped

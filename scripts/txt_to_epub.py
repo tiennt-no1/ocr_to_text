@@ -47,14 +47,56 @@ def collect_txts(inputs: list[str]) -> list[Path]:
     return sorted(files, key=natural_key)
 
 
+_SENT_END = tuple('.!?:;…"”\')»]')
+
+
+def merge_lines(lines: list[str]) -> list[str]:
+    """Merge wrapped OCR lines into logical paragraphs.
+
+    A break starts a new paragraph when the previous line ended the
+    paragraph early (short line) or it ended a sentence and the next line
+    begins with a capital letter. Blank lines keep a hard break unless the
+    text clearly continues mid-sentence (e.g. a page turn).
+    """
+    nonblank = [l for l in lines if l.strip()]
+    if not nonblank:
+        return []
+    lens = sorted(len(l.strip()) for l in nonblank)
+    median = lens[len(lens) // 2] or 1
+    short = 0.65 * median
+
+    paras: list[list[str]] = [[]]
+    prev = ""
+    prev_blank = False
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            prev_blank = True
+            continue
+        is_upper = stripped[0].isupper()
+        prev_ended = prev.rstrip().endswith(_SENT_END)
+        new_para = False
+        if prev:
+            if prev_blank:
+                # hard break, but keep the paragraph open when the text
+                # clearly continues mid-sentence (page turn, etc.)
+                new_para = prev_ended or is_upper
+            else:
+                new_para = prev_ended and (
+                    len(prev) <= short or (len(prev) <= median and is_upper)
+                )
+        if new_para:
+            paras.append([])
+        paras[-1].append(stripped)
+        prev = stripped
+        prev_blank = False
+    return [" ".join(p) for p in paras if p]
+
+
 def paragraphs(text: str) -> str:
-    blocks = re.split(r"\n\s*\n", text.strip())
     out = []
-    for b in blocks:
-        for line in b.strip().splitlines():
-            line = line.strip()
-            if line:
-                out.append(f"    <p>{html.escape(line)}</p>")
+    for para in merge_lines(text.strip().splitlines()):
+        out.append(f"    <p>{html.escape(para)}</p>")
         out.append("")
     return "\n".join(out)
 

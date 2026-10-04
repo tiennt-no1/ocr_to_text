@@ -64,6 +64,9 @@ Examples:
 
 Produces a valid EPUB 3 (with EPUB 2 NCX fallback) that opens in Kindle,
 Apple Books, Kobo, and other ebook readers. No extra dependencies needed.
+Wrapped OCR lines are merged into real paragraphs (a new paragraph starts
+when the previous line ended a sentence early on the page), and
+mid-paragraph page breaks are re-joined.
 
 ## 4. Use it as an opencode skill
 
