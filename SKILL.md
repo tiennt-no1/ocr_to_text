@@ -1,6 +1,6 @@
 ---
 name: ocr-tool
-description: Use when the user wants to convert a Vietnamese image or PDF into a txt file — e.g. "convert this image to txt", "OCR this scanned PDF", "extract Vietnamese text from a photo". Uses VietOCR (VGG Transformer), a Vietnamese-specific OCR model.
+description: Use when the user wants to convert a Vietnamese image or PDF into a txt file, or convert txt output into an epub ebook — e.g. "convert this image to txt", "OCR this scanned PDF", "extract Vietnamese text from a photo", "convert txt to epub", "make an ebook from these txt files". Uses VietOCR (VGG Transformer), a Vietnamese-specific OCR model.
 ---
 
 # OCR Tool — Vietnamese Image/PDF → TXT (VietOCR)
@@ -41,6 +41,29 @@ Options:
 - `--engine vision|vietocr` — default `vision` (fast); `vietocr` = the VietOCR model
 - `--weights PATH` — custom pretrained weights
 - `--config NAME` — VietOCR model name (default `vgg_transformer`)
+
+## TXT → EPUB (ebook)
+
+Convert the OCR `.txt` output into a `.epub` readable on ebook devices
+(Kindle, Apple Books, Kobo, ...). No extra dependencies — uses only the
+Python stdlib.
+
+```bash
+.ocr/bin/python scripts/txt_to_epub.py <txt files or dirs...> -o book.epub --title "Title" --author "Author"
+```
+
+Examples:
+
+```bash
+# each page_NNN.txt becomes one chapter
+.ocr/bin/python scripts/txt_to_epub.py exports/test_vision2 -o book.epub --title "Thinking in Bets"
+
+# one merged txt, split on "Chương/Chapter/Phần/Hồi/..." headings
+.ocr/bin/python scripts/txt_to_epub.py book.txt -o book.epub --split-chapters
+```
+
+Options: `--language` (default `vi`), `--author`, `--split-chapters`.
+Produces a valid EPUB 3 with an EPUB 2 NCX fallback.
 
 ## Important caveat
 

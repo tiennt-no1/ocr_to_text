@@ -1,13 +1,15 @@
 # ocr_tool
 
 AI skill that converts Vietnamese images and PDFs to `.txt` using **VietOCR**
-(VGG Transformer — a Vietnamese-specific OCR model).
+(VGG Transformer — a Vietnamese-specific OCR model), and packages the
+resulting `.txt` files into a `.epub` ebook.
 
 ## Layout
 
 ```
 SKILL.md                 # skill definition (name, description, usage)
 scripts/ocr_to_txt.py    # image/pdf -> txt via VietOCR
+scripts/txt_to_epub.py   # list of txt files -> epub ebook
 data/                    # pretrained weights (auto-downloaded)
 references/              # extra notes / prompts (optional)
 ```
@@ -44,13 +46,33 @@ first run (only needed with `--engine vietocr`).
   Vietnamese support.
 - `--engine vietocr`: VieOCR model — slower (~30s/page), line-level model.
 
-## 3. Use it as an opencode skill
+## 3. Convert txt output to an ebook (.epub)
+
+```bash
+.ocr/bin/python scripts/txt_to_epub.py <txt files or dirs...> -o book.epub --title "Title" --author "Author"
+```
+
+Examples:
+
+```bash
+# each page_NNN.txt becomes a chapter
+.ocr/bin/python scripts/txt_to_epub.py exports/test_vision2 -o book.epub --title "Thinking in Bets"
+
+# one merged txt, split on "Chương/Chapter/..." headings
+.ocr/bin/python scripts/txt_to_epub.py book.txt -o book.epub --split-chapters
+```
+
+Produces a valid EPUB 3 (with EPUB 2 NCX fallback) that opens in Kindle,
+Apple Books, Kobo, and other ebook readers. No extra dependencies needed.
+
+## 4. Use it as an opencode skill
 
 ```bash
 ln -s /Users/macos01/Desktop/ocr_tool ~/.config/opencode/skills/ocr-tool
 ```
 
-Then in opencode you can just say e.g. "convert this image to txt".
+Then in opencode you can just say e.g. "convert this image to txt" or
+"convert the txt files to an epub ebook".
 
 ## Notes
 
