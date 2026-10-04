@@ -1,0 +1,10 @@
+vietocr
+pypdfium2
+Pillow
+torch
+setuptools<81
+numpy<2
+torchvision
+opencv-python-headless
+pyobjc-framework-Vision
+pyobjc-framework-Quartz

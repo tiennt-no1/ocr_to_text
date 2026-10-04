@@ -1,0 +1,6 @@
+data/
+exports/
+.ocr/
+*.pyc
+__pycache__/
+.DS_Store
